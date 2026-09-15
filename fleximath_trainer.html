@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexiMath - Mental Agility & Operational Flexibility Trainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f6ff',
+                            100: '#e0edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        amberBadge: '#f59e0b',
+                        purpleBadge: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.7); }
+        }
+        .rule-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        .keypad-btn {
+            touch-action: manipulation;
+            transition: all 0.1s ease;
+        }
+        .keypad-btn:active {
+            transform: scale(0.94);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Header Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-xl shadow-lg">
+                    🧠
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                        FlexiMath <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Ages 12-14</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Mental Agility & Cognitive Flexibility Assessment</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button id="soundToggleBtn" onclick="toggleSound()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-sm flex items-center gap-1.5 border border-slate-700">
+                    <span id="soundIcon">🔊</span> <span class="hidden md:inline text-xs font-medium">Sound ON</span>
+                </button>
+                <button onclick="showGuideModal()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-sm flex items-center gap-1.5 border border-slate-700">
+                    ❓ <span class="hidden md:inline text-xs font-medium">Rules Guide</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full px-4 py-6 flex-grow flex flex-col justify-center">
+
+        <!-- ================= VIEW 1: SETUP SCREEN ================= -->
+        <div id="setupView" class="space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Test Your Cognitive Flexibility</h2>
+                <p class="text-slate-400 max-w-lg mx-auto text-sm sm:text-base">
+                    Challenge your brain to switch operational rules rapidly while maintaining fast arithmetic precision.
+                </p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+                <!-- Variable 1: Speed / Time Constraint -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="font-semibold text-slate-200 text-sm sm:text-base flex items-center gap-2">
+                            <span>⏱️ Time Limit (Agility Constraint)</span>
+                        </label>
+                        <span id="timeDisplay" class="font-mono text-indigo-400 font-bold bg-indigo-950/60 border border-indigo-800/50 px-3 py-1 rounded-lg text-sm">15 Seconds / Question</span>
+                    </div>
+                    <input type="range" id="timeSlider" min="5" max="30" step="1" value="15" oninput="updateSettingsUI()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                    <div class="flex justify-between text-xs text-slate-500 font-mono">
+                        <span>5s (Hyper Speed)</span>
+                        <span>15s (Standard)</span>
+                        <span>30s (Relaxed)</span>
+                    </div>
+                </div>
+
+                <!-- Variable 2: Operational Flexibility Level -->
+                <div class="space-y-3 pt-4 border-t border-slate-800">
+                    <label class="font-semibold text-slate-200 text-sm sm:text-base flex items-center gap-2">
+                        <span>🔄 Operational Flexibility Level (Rule Switching)</span>
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button type="button" onclick="setFlexibility('low')" id="flexBtnLow" class="flex-1 p-3.5 rounded-xl border text-left transition flex flex-col justify-between border-slate-700 bg-slate-800/50 hover:border-slate-600">
+                            <div>
+                                <span class="font-bold text-slate-200 block text-sm">Low Flexibility</span>
+                                <span class="text-xs text-slate-400">Rule stays fixed across 10 questions.</span>
+                            </div>
+                            <span class="mt-2 inline-block text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold w-max">Predictable</span>
+                        </button>
+
+                        <button type="button" onclick="setFlexibility('medium')" id="flexBtnMedium" class="flex-1 p-3.5 rounded-xl border text-left transition flex flex-col justify-between border-indigo-500 bg-indigo-950/40 border-2">
+                            <div>
+                                <span class="font-bold text-indigo-300 block text-sm">Medium Flexibility</span>
+                                <span class="text-xs text-slate-400">Rule changes every 3-4 questions.</span>
+                            </div>
+                            <span class="mt-2 inline-block text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-semibold w-max">Recommended</span>
+                        </button>
+
+                        <button type="button" onclick="setFlexibility('high')" id="flexBtnHigh" class="flex-1 p-3.5 rounded-xl border text-left transition flex flex-col justify-between border-slate-700 bg-slate-800/50 hover:border-slate-600">
+                            <div>
+                                <span class="font-bold text-slate-200 block text-sm">Chaos Flexibility</span>
+                                <span class="text-xs text-slate-400">Rule changes every single question!</span>
+                            </div>
+                            <span class="mt-2 inline-block text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-semibold w-max">High Cognitive Load</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rule Preview Box -->
+                <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800 text-xs text-slate-400 space-y-1">
+                    <div class="font-semibold text-slate-300 flex items-center gap-1.5">
+                        💡 How Dynamic Rule Switching Works:
+                    </div>
+                    <p>Instead of standard math, you will encounter modified operational logic on the fly (e.g., <code class="text-amber-400 bg-slate-900 px-1 py-0.5 rounded">"+" means Multiply</code> or <code class="text-amber-400 bg-slate-900 px-1 py-0.5 rounded">Reverse digits before operating</code>). You must suppress default habits and compute using the target rule!</p>
+                </div>
+
+                <button onclick="startSession()" class="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-lg shadow-xl shadow-indigo-600/30 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
+                    🚀 Start 10-Question Session
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= VIEW 2: ACTIVE PLAY ARENA ================= -->
+        <div id="playArena" class="hidden space-y-4">
+            <!-- Top Progress & Timer Header -->
+            <div class="flex justify-between items-center bg-slate-900 p-3.5 rounded-xl border border-slate-800 font-mono text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400">Question:</span>
+                    <span id="questionCounter" class="font-bold text-white text-base">1/10</span>
+                </div>
+
+                <!-- Timer Bar -->
+                <div class="w-1/3 sm:w-1/2 bg-slate-800 h-3 rounded-full overflow-hidden relative">
+                    <div id="timerBar" class="bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 h-full w-full transition-all duration-100 ease-linear"></div>
+                </div>
+
+                <div class="flex items-center gap-1 text-amber-400 font-bold">
+                    ⏱️ <span id="timerText" class="text-base">15.0</span>s
+                </div>
+            </div>
+
+            <!-- Active Flexibility Rule Badge -->
+            <div id="ruleBadgeContainer" class="p-4 rounded-2xl border border-purple-500/50 bg-gradient-to-r from-purple-950/70 via-indigo-950/70 to-slate-900 rule-glow transition-all">
+                <div class="flex items-start gap-3">
+                    <div class="text-2xl" id="ruleIcon">⚠️</div>
+                    <div class="space-y-0.5">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-purple-300 flex items-center gap-2">
+                            <span>OPERATIONAL FLEXIBILITY MODIFIER</span>
+                            <span id="ruleShiftIndicator" class="hidden text-[9px] bg-rose-500 text-white px-1.5 py-0.5 rounded font-extrabold animate-bounce">NEW RULE SHIFT!</span>
+                        </div>
+                        <h3 id="ruleTitle" class="font-bold text-white text-base sm:text-lg">Standard Arithmetic</h3>
+                        <p id="ruleDesc" class="text-xs sm:text-sm text-slate-300">Calculate using standard order of operations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Math Question Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-xl">
+                <div class="text-xs uppercase font-mono tracking-widest text-slate-500">Solve under the active rule</div>
+                
+                <div id="problemDisplay" class="font-mono text-3xl sm:text-5xl font-extrabold tracking-tight text-white py-2">
+                    12 + 15
+                </div>
+
+                <!-- Answer Display Box -->
+                <div class="max-w-xs mx-auto relative">
+                    <input type="text" id="answerInput" readonly placeholder="Enter Answer" class="w-full text-center font-mono text-2xl sm:text-3xl font-bold bg-slate-950 border-2 border-slate-700 text-emerald-400 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 tracking-wider">
+                    <div id="feedbackFlash" class="absolute inset-0 rounded-xl flex items-center justify-center font-bold text-xl opacity-0 pointer-events-none transition-opacity duration-200"></div>
+                </div>
+            </div>
+
+            <!-- Virtual On-screen Keypad -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 max-w-sm mx-auto shadow-lg">
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="keypadInput('7')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">7</button>
+                    <button onclick="keypadInput('8')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">8</button>
+                    <button onclick="keypadInput('9')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">9</button>
+
+                    <button onclick="keypadInput('4')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">4</button>
+                    <button onclick="keypadInput('5')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">5</button>
+                    <button onclick="keypadInput('6')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">6</button>
+
+                    <button onclick="keypadInput('1')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">1</button>
+                    <button onclick="keypadInput('2')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">2</button>
+                    <button onclick="keypadInput('3')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">3</button>
+
+                    <button onclick="keypadInput('-')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xl font-bold rounded-xl border border-slate-700/60">-</button>
+                    <button onclick="keypadInput('0')" class="keypad-btn py-3 bg-slate-800 hover:bg-slate-700 text-white font-mono text-xl font-bold rounded-xl border border-slate-700/60">0</button>
+                    <button onclick="keypadBackspace()" class="keypad-btn py-3 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 font-mono text-xl font-bold rounded-xl border border-rose-800/40">⌫</button>
+                </div>
+                
+                <button onclick="submitAnswer()" class="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-lg shadow-md transition active:scale-[0.98]">
+                    Submit Answer (Enter) ↵
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= VIEW 3: PERFORMANCE DASHBOARD ================= -->
+        <div id="dashboardView" class="hidden space-y-6">
+            <div class="text-center space-y-1">
+                <div class="inline-block px-3 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-semibold mb-2">
+                    Assessment Complete
+                </div>
+                <h2 class="text-3xl font-extrabold text-white">Cognitive Performance Breakdown</h2>
+                <p class="text-slate-400 text-sm">Mental Agility & Operational Flexibility Matrix</p>
+            </div>
+
+            <!-- Top Score Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-1">
+                    <div class="text-xs text-slate-400 uppercase font-mono">Overall Accuracy</div>
+                    <div id="dashAccuracy" class="text-3xl font-extrabold text-emerald-400 font-mono">80%</div>
+                    <div id="dashAccuracySub" class="text-xs text-slate-500">8 of 10 correct</div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-1">
+                    <div class="text-xs text-slate-400 uppercase font-mono">Agility Index (Avg Time)</div>
+                    <div id="dashAgility" class="text-3xl font-extrabold text-indigo-400 font-mono">4.2s</div>
+                    <div id="dashAgilitySub" class="text-xs text-slate-500">Target limit: 15.0s</div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-1">
+                    <div class="text-xs text-slate-400 uppercase font-mono">Flexibility Rating</div>
+                    <div id="dashFlexibility" class="text-3xl font-extrabold text-purple-400 font-mono">HIGH</div>
+                    <div id="dashFlexibilitySub" class="text-xs text-slate-500">Adapts rapidly to rule changes</div>
+                </div>
+            </div>
+
+            <!-- Custom SVG Radar & Breakdown -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                <!-- Radar Chart Container -->
+                <div class="flex flex-col items-center justify-center space-y-3">
+                    <h4 class="text-sm font-bold text-slate-300 flex items-center gap-1.5">
+                        <span>🎯 Cognitive Skill Radar</span>
+                    </h4>
+                    <div class="w-full max-w-[260px] aspect-square flex items-center justify-center">
+                        <svg id="radarSvg" viewBox="0 0 300 300" class="w-full h-full">
+                            <!-- SVG Radar Chart rendered dynamically in JS -->
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Strategic Insights -->
+                <div class="space-y-4 flex flex-col justify-center">
+                    <h4 class="text-sm font-bold text-slate-300">Cognitive Load Diagnostics</h4>
+                    
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                            <div class="font-bold text-indigo-300 flex justify-between">
+                                <span>Rule-Switch Inhibition:</span>
+                                <span id="diagInhibition">Strong</span>
+                            </div>
+                            <p class="text-slate-400" id="diagInhibitionText">Ability to suppress standard arithmetic habits when modified rules are introduced.</p>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                            <div class="font-bold text-purple-300 flex justify-between">
+                                <span>Speed under Pressure:</span>
+                                <span id="diagSpeed">Excellent</span>
+                            </div>
+                            <p class="text-slate-400" id="diagSpeedText">Maintained pace without sacrificing calculation accuracy.</p>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                            <div class="font-bold text-amber-300 flex justify-between">
+                                <span>Primary Error Source:</span>
+                                <span id="diagErrorSource">None</span>
+                            </div>
+                            <p class="text-slate-400" id="diagErrorSourceText">Great performance overall!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Question Log -->
+            <div class="space-y-3">
+                <h4 class="text-sm font-bold text-slate-300">Question History & Step-by-Step Solutions</h4>
+                <div id="questionHistoryContainer" class="space-y-2">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="restartSession()" class="flex-1 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base shadow-lg transition">
+                    🔄 Try Another Round
+                </button>
+                <button onclick="showSetup()" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-base border border-slate-700">
+                    ⚙️ Change Settings
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Rules Guide Modal -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-white text-lg flex items-center gap-2">📖 Flexibility Rule Manual</h3>
+                <button onclick="closeGuideModal()" class="text-slate-400 hover:text-white font-mono text-xl">✕</button>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm text-slate-300">
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="font-bold text-purple-400 block">1. 🔀 Operator Swap</span>
+                    <p class="text-slate-400">Operators are swapped: <code class="text-white bg-slate-800 px-1 py-0.5 rounded">+</code> becomes Multiply (×), <code class="text-white bg-slate-800 px-1 py-0.5 rounded">-</code> becomes Add (+), <code class="text-white bg-slate-800 px-1 py-0.5 rounded">×</code> becomes Subtract (-).</p>
+                    <p class="text-emerald-400 font-mono text-xs">Example: 5 + 4 under this rule is 5 × 4 = 20.</p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="font-bold text-purple-400 block">2. 🔄 Digit Flip</span>
+                    <p class="text-slate-400">Reverse the digits of all 2-digit numbers before calculating.</p>
+                    <p class="text-emerald-400 font-mono text-xs">Example: 14 + 23 becomes 41 + 32 = 73.</p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="font-bold text-purple-400 block">3. ✌️ Even Booster (+2)</span>
+                    <p class="text-slate-400">Add +2 to any even number in the expression before calculating.</p>
+                    <p class="text-emerald-400 font-mono text-xs">Example: 4 + 5 -> (4+2) + 5 = 6 + 5 = 11.</p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="font-bold text-purple-400 block">4. 🎯 Modulo 10 (Last Digit Target)</span>
+                    <p class="text-slate-400">Calculate normally, but the answer is ONLY the last single digit (Remainder modulo 10).</p>
+                    <p class="text-emerald-400 font-mono text-xs">Example: 14 × 3 = 42 -> Last digit is 2.</p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span class="font-bold text-purple-400 block">5. ➕ Sign Switcher</span>
+                    <p class="text-slate-400">Invert the sign of numbers (Positive becomes Negative, Negative becomes Positive).</p>
+                    <p class="text-emerald-400 font-mono text-xs">Example: 8 - (-3) becomes (-8) - (+3) = -11.</p>
+                </div>
+            </div>
+
+            <button onclick="closeGuideModal()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-sm">
+                Got It!
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-600">
+        FlexiMath Assessment Simulator • Calibrated for Middle School Cognitive Metrics (Ages 12–14)
+    </footer>
+
+    <script>
+        /* ================= AUDIO SYNTHESIS ENGINE (WEB AUDIO API) ================= */
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').innerText = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundToggleBtn').querySelector('span:nth-child(2)').innerText = soundEnabled ? 'Sound ON' : 'Sound OFF';
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(140, now + 0.1);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'shift') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(900, now + 0.15);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        /* ================= GAME STATE & CONFIGURATION ================= */
+        const RULES = [
+            {
+                id: 'standard',
+                title: 'Standard Arithmetic',
+                icon: '⚡',
+                desc: 'Calculate using normal mathematical rules and standard order of operations.',
+                transform: (a, op, b) => {
+                    let ans = 0;
+                    if (op === '+') ans = a + b;
+                    else if (op === '-') ans = a - b;
+                    else if (op === '×') ans = a * b;
+                    return { answer: ans, step: `${a} ${op} ${b} = ${ans}` };
+                }
+            },
+            {
+                id: 'operator_swap',
+                title: 'Operator Swap Rule',
+                icon: '🔀',
+                desc: 'REVERSE OPERATORS: "+" becomes Multiply (×), "-" becomes Add (+), "×" becomes Subtract (-).',
+                transform: (a, op, b) => {
+                    let newOp = op;
+                    let ans = 0;
+                    if (op === '+') { newOp = '×'; ans = a * b; }
+                    else if (op === '-') { newOp = '+'; ans = a + b; }
+                    else if (op === '×') { newOp = '-'; ans = a - b; }
+                    return { answer: ans, step: `Replace "${op}" with "${newOp}": ${a} ${newOp} ${b} = ${ans}` };
+                }
+            },
+            {
+                id: 'digit_flip',
+                title: 'Digit Reverse Rule',
+                icon: '🔄',
+                desc: 'FLIP DIGITS: Reverse digits of all 2-digit numbers before performing the operation.',
+                transform: (a, op, b) => {
+                    const flip = (n) => {
+                        if (Math.abs(n) >= 10 && Math.abs(n) <= 99) {
+                            const rev = parseInt(String(Math.abs(n)).split('').reverse().join(''));
+                            return n < 0 ? -rev : rev;
+                        }
+                        return n;
+                    };
+                    const fa = flip(a);
+                    const fb = flip(b);
+                    let ans = 0;
+                    if (op === '+') ans = fa + fb;
+                    else if (op === '-') ans = fa - fb;
+                    else if (op === '×') ans = fa * fb;
+                    return { answer: ans, step: `Reverse digits: ${a}→${fa}, ${b}→${fb}. Compute: ${fa} ${op} ${fb} = ${ans}` };
+                }
+            },
+            {
+                id: 'even_booster',
+                title: 'Even Booster Rule (+2)',
+                icon: '✌️',
+                desc: 'EVEN NUMBERS BOOST: Add +2 to any EVEN number in the problem before operating.',
+                transform: (a, op, b) => {
+                    const boostA = (a % 2 === 0) ? a + 2 : a;
+                    const boostB = (b % 2 === 0) ? b + 2 : b;
+                    let ans = 0;
+                    if (op === '+') ans = boostA + boostB;
+                    else if (op === '-') ans = boostA - boostB;
+                    else if (op === '×') ans = boostA * boostB;
+                    return { answer: ans, step: `Add +2 to evens: (${a}→${boostA}), (${b}→${boostB}). Compute: ${boostA} ${op} ${boostB} = ${ans}` };
+                }
+            },
+            {
+                id: 'modulo_10',
+                title: 'Modulo 10 (Last Digit Target)',
+                icon: '🎯',
+                desc: 'LAST DIGIT TARGET: Calculate normally, but answer is ONLY the last digit (mod 10).',
+                transform: (a, op, b) => {
+                    let norm = 0;
+                    if (op === '+') norm = a + b;
+                    else if (op === '-') norm = a - b;
+                    else if (op === '×') norm = a * b;
+                    let modAns = ((norm % 10) + 10) % 10;
+                    return { answer: modAns, step: `Normal result is ${norm}. Last digit (mod 10) is ${modAns}` };
+                }
+            },
+            {
+                id: 'sign_switcher',
+                title: 'Sign Inverter Rule',
+                icon: '➕',
+                desc: 'SIGN INVERT: Change positive numbers to negative and negative numbers to positive.',
+                transform: (a, op, b) => {
+                    const sa = -a;
+                    const sb = -b;
+                    let ans = 0;
+                    if (op === '+') ans = sa + sb;
+                    else if (op === '-') ans = sa - sb;
+                    else if (op === '×') ans = sa * sb;
+                    return { answer: ans, step: `Invert signs: (${a}→${sa}), (${b}→${sb}). Compute: ${sa} ${op} ${sb} = ${ans}` };
+                }
+            }
+        ];
+
+        let state = {
+            timeLimit: 15,
+            flexibilityLevel: 'medium', // low, medium, high
+            currentQuestionIdx: 0,
+            questions: [],
+            currentRule: RULES[0],
+            timerInterval: null,
+            timeRemaining: 15,
+            startTime: 0,
+            userLogs: []
+        };
+
+        function updateSettingsUI() {
+            state.timeLimit = parseInt(document.getElementById('timeSlider').value);
+            document.getElementById('timeDisplay').innerText = `${state.timeLimit} Seconds / Question`;
+        }
+
+        function setFlexibility(level) {
+            state.flexibilityLevel = level;
+            ['Low', 'Medium', 'High'].forEach(l => {
+                const btn = document.getElementById(`flexBtn${l}`);
+                if (l.toLowerCase() === level) {
+                    btn.className = "flex-1 p-3.5 rounded-xl border text-left transition flex flex-col justify-between border-indigo-500 bg-indigo-950/40 border-2 shadow-lg";
+                } else {
+                    btn.className = "flex-1 p-3.5 rounded-xl border text-left transition flex flex-col justify-between border-slate-700 bg-slate-800/50 hover:border-slate-600";
+                }
+            });
+        }
+
+        function showSetup() {
+            document.getElementById('setupView').classList.remove('hidden');
+            document.getElementById('playArena').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+        }
+
+        function showGuideModal() {
+            document.getElementById('guideModal').classList.remove('hidden');
+        }
+        function closeGuideModal() {
+            document.getElementById('guideModal').classList.add('hidden');
+        }
+
+        function generateProblemSet() {
+            const problems = [];
+            const ops = ['+', '-', '×'];
+            
+            for (let i = 0; i < 10; i++) {
+                let a, b, op;
+                op = ops[Math.floor(Math.random() * ops.length)];
+                
+                if (op === '×') {
+                    a = Math.floor(Math.random() * 14) + 2;
+                    b = Math.floor(Math.random() * 12) + 2;
+                } else if (op === '+') {
+                    a = Math.floor(Math.random() * 45) + 10;
+                    b = Math.floor(Math.random() * 45) + 10;
+                } else {
+                    a = Math.floor(Math.random() * 50) + 15;
+                    b = Math.floor(Math.random() * 40) + 5;
+                }
+                
+                problems.push({ a, op, b });
+            }
+            return problems;
+        }
+
+        function pickRuleForQuestion(idx) {
+            if (state.flexibilityLevel === 'low') {
+                // Fixed rule for entire round
+                if (idx === 0) {
+                    const flexRules = RULES.filter(r => r.id !== 'standard');
+                    return flexRules[Math.floor(Math.random() * flexRules.length)];
+                }
+                return state.currentRule;
+            } else if (state.flexibilityLevel === 'medium') {
+                // Change rule every 3 questions
+                if (idx % 3 === 0 || idx === 0) {
+                    return RULES[Math.floor(Math.random() * RULES.length)];
+                }
+                return state.currentRule;
+            } else {
+                // High/Chaos: change rule every question!
+                return RULES[Math.floor(Math.random() * RULES.length)];
+            }
+        }
+
+        function startSession() {
+            initAudio();
+            state.currentQuestionIdx = 0;
+            state.questions = generateProblemSet();
+            state.userLogs = [];
+
+            document.getElementById('setupView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('playArena').classList.remove('hidden');
+
+            loadQuestion(0);
+        }
+
+        function restartSession() {
+            startSession();
+        }
+
+        function loadQuestion(idx) {
+            state.currentQuestionIdx = idx;
+            document.getElementById('questionCounter').innerText = `${idx + 1}/10`;
+            document.getElementById('answerInput').value = '';
+
+            const previousRuleId = state.currentRule ? state.currentRule.id : null;
+            state.currentRule = pickRuleForQuestion(idx);
+
+            // Rule Badge update
+            const badgeContainer = document.getElementById('ruleBadgeContainer');
+            const shiftIndicator = document.getElementById('ruleShiftIndicator');
+            
+            document.getElementById('ruleIcon').innerText = state.currentRule.icon;
+            document.getElementById('ruleTitle').innerText = state.currentRule.title;
+            document.getElementById('ruleDesc').innerText = state.currentRule.desc;
+
+            if (previousRuleId && previousRuleId !== state.currentRule.id) {
+                playSound('shift');
+                shiftIndicator.classList.remove('hidden');
+                setTimeout(() => shiftIndicator.classList.add('hidden'), 2500);
+            } else {
+                shiftIndicator.classList.add('hidden');
+            }
+
+            // Display problem
+            const prob = state.questions[idx];
+            document.getElementById('problemDisplay').innerText = `${prob.a} ${prob.op} ${prob.b}`;
+
+            // Reset & Start Timer
+            clearInterval(state.timerInterval);
+            state.timeRemaining = state.timeLimit;
+            state.startTime = Date.now();
+            updateTimerBar();
+
+            state.timerInterval = setInterval(() => {
+                state.timeRemaining -= 0.1;
+                if (state.timeRemaining <= 0) {
+                    state.timeRemaining = 0;
+                    updateTimerBar();
+                    clearInterval(state.timerInterval);
+                    processAnswer(null, true); // Timeout
+                } else {
+                    updateTimerBar();
+                }
+            }, 100);
+        }
+
+        function updateTimerBar() {
+            document.getElementById('timerText').innerText = state.timeRemaining.toFixed(1);
+            const pct = (state.timeRemaining / state.timeLimit) * 100;
+            const bar = document.getElementById('timerBar');
+            bar.style.width = `${Math.max(0, pct)}%`;
+
+            if (pct < 25) {
+                bar.className = "bg-rose-500 h-full w-full transition-all duration-100 ease-linear";
+            } else if (pct < 55) {
+                bar.className = "bg-amber-400 h-full w-full transition-all duration-100 ease-linear";
+            } else {
+                bar.className = "bg-emerald-400 h-full w-full transition-all duration-100 ease-linear";
+            }
+        }
+
+        function keypadInput(val) {
+            playSound('click');
+            const inp = document.getElementById('answerInput');
+            if (val === '-' && inp.value.includes('-')) return;
+            inp.value += val;
+        }
+
+        function keypadBackspace() {
+            playSound('click');
+            const inp = document.getElementById('answerInput');
+            inp.value = inp.value.slice(0, -1);
+        }
+
+        // Global physical keyboard listener
+        window.addEventListener('keydown', (e) => {
+            const playArena = document.getElementById('playArena');
+            if (playArena.classList.contains('hidden')) return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                keypadInput(e.key);
+            } else if (e.key === '-') {
+                keypadInput('-');
+            } else if (e.key === 'Backspace') {
+                keypadBackspace();
+            } else if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+
+        function submitAnswer() {
+            const inp = document.getElementById('answerInput').value.trim();
+            if (inp === '') return;
+            processAnswer(parseInt(inp), false);
+        }
+
+        function processAnswer(userAnswer, timedOut) {
+            clearInterval(state.timerInterval);
+            const prob = state.questions[state.currentQuestionIdx];
+            const timeTaken = (Date.now() - state.startTime) / 1000;
+            
+            // Calculate correct transform
+            const calcResult = state.currentRule.transform(prob.a, prob.op, prob.b);
+            const isCorrect = !timedOut && (userAnswer === calcResult.answer);
+
+            // Audio & Visual Feedback
+            const feedbackEl = document.getElementById('feedbackFlash');
+            if (isCorrect) {
+                playSound('correct');
+                feedbackEl.innerText = "✓ CORRECT";
+                feedbackEl.className = "absolute inset-0 rounded-xl flex items-center justify-center font-bold text-xl bg-emerald-500/90 text-white opacity-100 transition-opacity duration-200";
+            } else {
+                playSound('wrong');
+                feedbackEl.innerText = timedOut ? "⏱️ TIME OUT" : `✕ INCORRECT (${calcResult.answer})`;
+                feedbackEl.className = "absolute inset-0 rounded-xl flex items-center justify-center font-bold text-xl bg-rose-500/90 text-white opacity-100 transition-opacity duration-200";
+            }
+
+            state.userLogs.push({
+                questionNumber: state.currentQuestionIdx + 1,
+                problemStr: `${prob.a} ${prob.op} ${prob.b}`,
+                rule: state.currentRule,
+                userAnswer: timedOut ? 'Time Out' : userAnswer,
+                correctAnswer: calcResult.answer,
+                isCorrect: isCorrect,
+                timeTaken: Math.min(timeTaken, state.timeLimit),
+                solutionStep: calcResult.step
+            });
+
+            setTimeout(() => {
+                feedbackEl.className = "absolute inset-0 rounded-xl flex items-center justify-center font-bold text-xl opacity-0 pointer-events-none transition-opacity duration-200";
+                if (state.currentQuestionIdx + 1 < 10) {
+                    loadQuestion(state.currentQuestionIdx + 1);
+                } else {
+                    finishSession();
+                }
+            }, 1200);
+        }
+
+        function finishSession() {
+            document.getElementById('playArena').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+
+            const total = state.userLogs.length;
+            const correctCount = state.userLogs.filter(l => l.isCorrect).length;
+            const accuracyPct = Math.round((correctCount / total) * 100);
+
+            const avgTime = (state.userLogs.reduce((acc, l) => acc + l.timeTaken, 0) / total).toFixed(1);
+
+            // Compute Flexibility score (% accuracy on non-standard rule questions)
+            const flexLogs = state.userLogs.filter(l => l.rule.id !== 'standard');
+            const flexCorrect = flexLogs.filter(l => l.isCorrect).length;
+            const flexAccuracy = flexLogs.length > 0 ? Math.round((flexCorrect / flexLogs.length) * 100) : accuracyPct;
+
+            // UI updates
+            document.getElementById('dashAccuracy').innerText = `${accuracyPct}%`;
+            document.getElementById('dashAccuracySub').innerText = `${correctCount} of ${total} correct`;
+
+            document.getElementById('dashAgility').innerText = `${avgTime}s`;
+            document.getElementById('dashAgilitySub').innerText = `Limit: ${state.timeLimit}.0s per Q`;
+
+            let flexRating = "HIGH";
+            if (flexAccuracy < 50) flexRating = "NEEDS PRACTICE";
+            else if (flexAccuracy < 75) flexRating = "MODERATE";
+            document.getElementById('dashFlexibility').innerText = flexRating;
+            document.getElementById('dashFlexibilitySub').innerText = `${flexAccuracy}% under dynamic rule shifts`;
+
+            // Diagnostics text
+            if (flexAccuracy >= 80) {
+                document.getElementById('diagInhibition').innerText = "Excellent";
+                document.getElementById('diagInhibitionText').innerText = "Student effortlessly suppressed standard arithmetic habits to apply modified rules.";
+            } else {
+                document.getElementById('diagInhibition').innerText = "Moderate Interference";
+                document.getElementById('diagInhibitionText').innerText = "Student occasionally defaulted to standard rules instead of the modified flexibility rule.";
+            }
+
+            if (parseFloat(avgTime) <= state.timeLimit * 0.4) {
+                document.getElementById('diagSpeed').innerText = "Hyper Fast";
+                document.getElementById('diagSpeedText').innerText = "Rapid mental calculation speed with high cognitive confidence.";
+            } else {
+                document.getElementById('diagSpeed').innerText = "Moderate";
+                document.getElementById('diagSpeedText').innerText = "Pace was steady. Extra practice will build faster mental flexibility.";
+            }
+
+            // Render Radar Chart
+            renderRadarChart(accuracyPct, Math.max(10, 100 - (avgTime / state.timeLimit * 100)), flexAccuracy);
+
+            // Render Question History
+            const historyContainer = document.getElementById('questionHistoryContainer');
+            historyContainer.innerHTML = state.userLogs.map(l => `
+                <div class="p-3.5 rounded-xl border ${l.isCorrect ? 'bg-slate-900 border-slate-800' : 'bg-rose-950/20 border-rose-900/40'} flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="${l.isCorrect ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}">${l.isCorrect ? '✓' : '✕'} Q${l.questionNumber}: ${l.problemStr}</span>
+                            <span class="px-2 py-0.5 rounded bg-slate-800 text-purple-300 text-[10px] font-sans">${l.rule.icon} ${l.rule.title}</span>
+                        </div>
+                        <div class="text-slate-400 font-mono">${l.solutionStep}</div>
+                    </div>
+                    <div class="flex sm:flex-col items-end justify-between sm:justify-center text-slate-400 font-mono text-[11px] border-t sm:border-t-0 border-slate-800 pt-1 sm:pt-0">
+                        <div>Your Ans: <span class="${l.isCorrect ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}">${l.userAnswer}</span> (Target: ${l.correctAnswer})</div>
+                        <div class="text-slate-500">Time: ${l.timeTaken.toFixed(1)}s</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* SVG Radar Chart Renderer */
+        function renderRadarChart(accuracy, speedScore, flexScore) {
+            const svg = document.getElementById('radarSvg');
+            const center = 150;
+            const radius = 100;
+            
+            // 3 Axes: Accuracy (top), Speed (bottom right), Flexibility (bottom left)
+            const angles = [-Math.PI / 2, Math.PI / 6, (5 * Math.PI) / 6];
+            
+            const getCoords = (valPct, angle) => {
+                const r = (valPct / 100) * radius;
+                return {
+                    x: center + r * Math.cos(angle),
+                    y: center + r * Math.sin(angle)
+                };
+            };
+
+            const ptAcc = getCoords(accuracy, angles[0]);
+            const ptSpd = getCoords(speedScore, angles[1]);
+            const ptFlx = getCoords(flexScore, angles[2]);
+
+            const p0 = getCoords(100, angles[0]);
+            const p1 = getCoords(100, angles[1]);
+            const p2 = getCoords(100, angles[2]);
+
+            svg.innerHTML = `
+                <!-- Background Grid Circles -->
+                <polygon points="${getCoords(100, angles[0]).x},${getCoords(100, angles[0]).y} ${getCoords(100, angles[1]).x},${getCoords(100, angles[1]).y} ${getCoords(100, angles[2]).x},${getCoords(100, angles[2]).y}" fill="none" stroke="#334155" stroke-width="1.5"/>
+                <polygon points="${getCoords(66, angles[0]).x},${getCoords(66, angles[0]).y} ${getCoords(66, angles[1]).x},${getCoords(66, angles[1]).y} ${getCoords(66, angles[2]).x},${getCoords(66, angles[2]).y}" fill="none" stroke="#1e293b" stroke-dasharray="3,3" stroke-width="1"/>
+                <polygon points="${getCoords(33, angles[0]).x},${getCoords(33, angles[0]).y} ${getCoords(33, angles[1]).x},${getCoords(33, angles[1]).y} ${getCoords(33, angles[2]).x},${getCoords(33, angles[2]).y}" fill="none" stroke="#1e293b" stroke-dasharray="3,3" stroke-width="1"/>
+                
+                <!-- Axis Lines -->
+                <line x1="${center}" y1="${center}" x2="${p0.x}" y2="${p0.y}" stroke="#475569" stroke-width="1.5"/>
+                <line x1="${center}" y1="${center}" x2="${p1.x}" y2="${p1.y}" stroke="#475569" stroke-width="1.5"/>
+                <line x1="${center}" y1="${center}" x2="${p2.x}" y2="${p2.y}" stroke="#475569" stroke-width="1.5"/>
+
+                <!-- Player Data Polygon -->
+                <polygon points="${ptAcc.x},${ptAcc.y} ${ptSpd.x},${ptSpd.y} ${ptFlx.x},${ptFlx.y}" fill="rgba(139, 92, 246, 0.4)" stroke="#8b5cf6" stroke-width="2.5"/>
+
+                <!-- Data Points -->
+                <circle cx="${ptAcc.x}" cy="${ptAcc.y}" r="4" fill="#10b981"/>
+                <circle cx="${ptSpd.x}" cy="${ptSpd.y}" r="4" fill="#3b82f6"/>
+                <circle cx="${ptFlx.x}" cy="${ptFlx.y}" r="4" fill="#8b5cf6"/>
+
+                <!-- Axis Labels -->
+                <text x="${p0.x}" y="${p0.y - 12}" fill="#34d399" font-size="11" font-weight="bold" text-anchor="middle">Accuracy (${accuracy}%)</text>
+                <text x="${p1.x + 10}" y="${p1.y + 15}" fill="#60a5fa" font-size="11" font-weight="bold" text-anchor="start">Agility (${Math.round(speedScore)}%)</text>
+                <text x="${p2.x - 10}" y="${p2.y + 15}" fill="#a78bfa" font-size="11" font-weight="bold" text-anchor="end">Flexibility (${flexScore}%)</text>
+            `;
+        }
+
+        // Initialize Settings on Load
+        window.onload = function() {
+            updateSettingsUI();
+            setFlexibility('medium');
+        };
+    </script>
+</body>
+</html>
